@@ -215,6 +215,7 @@ function generate_config() {
     # set CONSENSUS_TYPE
     if [ $CONSENSUS_TYPE == -1 ] ;then
       if  [ $NODE_CNT -gt 1 ] ;then
+#        输入共识类型
         read -p "input consensus type (1-TBFT(default),3-MAXBFT,4-RAFT): " tmp
         if  [ ! -z "$tmp" ] ;then
           if [ $tmp -eq 1 ] || [ $tmp -eq 3 ] || [ $tmp -eq 4 ] ;then
@@ -242,7 +243,7 @@ function generate_config() {
       exit
     fi
     echo "param CONSENSUS_TYPE $CONSENSUS_TYPE"
-
+#log配置
     # set LOG_LEVEL
     if [ "$LOG_LEVEL" == "" ] ;then
       read -p "input log level (DEBUG|INFO(default)|WARN|ERROR): " tmp
@@ -307,13 +308,13 @@ function generate_config() {
     fi
     echo "param ENABLE_VM_GO $ENABLE_VM_GO"
     echo
-
+#将之前的配置文件复制移除
     cd "${BUILD_PATH}"
     if [ -d config ]; then
         mkdir -p backup/backup_config
         mv config  backup/backup_config/config_$(date "+%Y%m%d%H%M%S")
     fi
-
+#生成新的配置文件
     mkdir -p ${BUILD_PATH}/config
     cd ${BUILD_PATH}/config
 
@@ -506,4 +507,4 @@ function generate_config() {
 
 check_params
 generate_certs
-#generate_config $@
+generate_config $@
