@@ -79,12 +79,9 @@ if [ $# -eq 1 ]; then
     exit 1
 fi
 
+#如果是linux系统,向配置文件中塞一些参数
 function xsed() {
     system=$(uname)
-    echo "================================================================"
-    echo "$@"
-    echo "================================================================"
-    exit 1
     if [ "${system}" = "Linux" ]; then
         sed -i "$@"
     else
@@ -162,18 +159,21 @@ function check_params() {
 #生成证书材料
 function generate_certs() {
     #echo "begin generate certs, cnt: ${NODE_CNT}"
-#    mkdir -p ${BUILD_PATH}
-#    cd "${BUILD_PATH}"
-#    if [ -d crypto-config ]; then
-#        mkdir -p backup/backup_certs
-#        mv crypto-config  backup/backup_certs/crypto-config_$(date "+%Y%m%d%H%M%S")
-#    fi
-#
-#    cp "$CRYPTOGEN_TOOL_CONF" crypto_config.yml
-#    cp $CRYPTOGEN_TOOL_PKCS11_KEYS pkcs11_keys.yml
+    mkdir -p ${BUILD_PATH}
+    cd "${BUILD_PATH}"
+    if [ -d crypto-config ]; then
+        mkdir -p backup/backup_certs
+        mv crypto-config  backup/backup_certs/crypto-config_$(date "+%Y%m%d%H%M%S")
+    fi
 
+#crypto_config.yml 加密材料生成规格参数
+    cp "$CRYPTOGEN_TOOL_CONF" crypto_config.yml
+    #pkcs11_keys.ymll 加密材料硬件相关参数(看不懂~)
+    cp $CRYPTOGEN_TOOL_PKCS11_KEYS pkcs11_keys.yml
+
+#如果是linux系统,向配置文件中塞一些参数
     xsed "s%count: 4%count: ${NODE_CNT}%g" crypto_config.yml
-
+#  生成加密材料
     ${CRYPTOGEN_TOOL_BIN} generate -c ./crypto_config.yml  -p ./pkcs11_keys.yml
 }
 
@@ -501,4 +501,4 @@ function generate_config() {
 
 check_params
 generate_certs
-generate_config $@
+#generate_config $@
