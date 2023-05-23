@@ -502,6 +502,8 @@ function generate_config() {
     done
 }
 
+#进行了参数检查
 check_params
+
 generate_certs
-generate_config $@
+#generate_config $@
