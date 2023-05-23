@@ -67,6 +67,7 @@ function show_help() {
     echo "    eg2: prepare.sh 4 1 11301 12301 32351 22351 -c 1 -l INFO -v false --vtp=tcp --vlog=INFO"
 }
 #  $#:表示返回所有脚本参数的个数
+# shellcheck disable=SC2233
 if ( [ $# -eq 1 ] && [ "$1" ==  "-h" ] ) ; then
     show_help
     exit 1
@@ -80,41 +81,46 @@ fi
 
 function xsed() {
     system=$(uname)
-
+    echo "================================================================"
+    echo "$@"
+    echo "================================================================"
+    exit 1
     if [ "${system}" = "Linux" ]; then
         sed -i "$@"
     else
         sed -i '' "$@"
     fi
 }
-
-
+#一些基础检查
 function check_params() {
     echo "begin check params..."
+    # shellcheck disable=SC2236
+#    节点数不为空
     if  [[ ! -n $NODE_CNT ]] ;then
         echo "node cnt is empty"
         show_help
         exit 1
     fi
-
+#节点数必须为1/4/7/10/13/16
     if  [ ! $NODE_CNT -eq 1 ] && [ ! $NODE_CNT -eq 4 ] && [ ! $NODE_CNT -eq 7 ]&& [ ! $NODE_CNT -eq 10 ]&& [ ! $NODE_CNT -eq 13 ]&& [ ! $NODE_CNT -eq 16 ];then
         echo "node cnt should be 1 or 4 or 7 or 10 or 13"
         show_help
         exit 1
     fi
-
+#链的个数不能为空
     if  [[ ! -n $CHAIN_CNT ]] ;then
         echo "chain cnt is empty"
         show_help
         exit 1
     fi
-
+#链的个数必须在1-4之间
     if  [ ${CHAIN_CNT} -lt 1 ] || [ ${CHAIN_CNT} -gt 4 ] ;then
         echo "chain cnt should be 1 - 4"
         show_help
         exit 1
     fi
 
+#判断p2p端口
     # 判断是否是数字
     if [ "$P2P_PORT" -gt 0 ] 2>/dev/null ;then
       # 判断数字范围
@@ -125,7 +131,7 @@ function check_params() {
         P2P_PORT=11301
     fi
     echo "param P2P_PORT $P2P_PORT"
-
+#判断RPC端口
     if [ "$RPC_PORT" -gt 0 ] 2>/dev/null ;then
       if  [ ${RPC_PORT} -ge 60000 ] || [ ${RPC_PORT} -le 10000 ];then
         RPC_PORT=12301
@@ -134,7 +140,7 @@ function check_params() {
         RPC_PORT=12301
     fi
     echo "param RPC_PORT $RPC_PORT"
-
+#判断go运行时端口
     if [ "$VM_GO_RUNTIME_PORT" -gt 0 ] 2>/dev/null ;then
       if  [ ${VM_GO_RUNTIME_PORT} -ge 60000 ] || [ ${VM_GO_RUNTIME_PORT} -le 10000 ];then
         VM_GO_RUNTIME_PORT=32351
@@ -143,7 +149,7 @@ function check_params() {
         VM_GO_RUNTIME_PORT=32351
     fi
     echo "param VM_GO_RUNTIME_PORT $VM_GO_RUNTIME_PORT"
-
+#判断go引擎端口
     if [ "$VM_GO_ENGINE_PORT" -gt 0 ] 2>/dev/null ;then
       if  [ ${VM_GO_ENGINE_PORT} -ge 60000 ] || [ ${VM_GO_ENGINE_PORT} -le 10000 ];then
         VM_GO_ENGINE_PORT=22351
@@ -153,18 +159,18 @@ function check_params() {
     fi
     echo "param VM_GO_ENGINE_PORT $VM_GO_ENGINE_PORT"
 }
-
+#生成证书材料
 function generate_certs() {
     #echo "begin generate certs, cnt: ${NODE_CNT}"
-    mkdir -p ${BUILD_PATH}
-    cd "${BUILD_PATH}"
-    if [ -d crypto-config ]; then
-        mkdir -p backup/backup_certs
-        mv crypto-config  backup/backup_certs/crypto-config_$(date "+%Y%m%d%H%M%S")
-    fi
-
-    cp $CRYPTOGEN_TOOL_CONF crypto_config.yml
-    cp $CRYPTOGEN_TOOL_PKCS11_KEYS pkcs11_keys.yml
+#    mkdir -p ${BUILD_PATH}
+#    cd "${BUILD_PATH}"
+#    if [ -d crypto-config ]; then
+#        mkdir -p backup/backup_certs
+#        mv crypto-config  backup/backup_certs/crypto-config_$(date "+%Y%m%d%H%M%S")
+#    fi
+#
+#    cp "$CRYPTOGEN_TOOL_CONF" crypto_config.yml
+#    cp $CRYPTOGEN_TOOL_PKCS11_KEYS pkcs11_keys.yml
 
     xsed "s%count: 4%count: ${NODE_CNT}%g" crypto_config.yml
 
