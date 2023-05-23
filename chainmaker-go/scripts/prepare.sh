@@ -15,7 +15,7 @@ function checkEnv() {
     fi
   fi
 }
-set -x
+
 checkEnv
 
 #脚本只要发生错误就退出
@@ -23,10 +23,15 @@ set -e
 
 VERSION='"2030100"'
 
+#节点数
 NODE_CNT=$1
+#链数量
 CHAIN_CNT=$2
+#p2p端口
 P2P_PORT=$3
+#rpc端口
 RPC_PORT=$4
+
 VM_GO_RUNTIME_PORT=$5
 VM_GO_ENGINE_PORT=$6
 
@@ -61,7 +66,7 @@ function show_help() {
     echo "    eg2: prepare.sh 4 1 11301 12301 32351 22351 -c 1 -l INFO -v true  --vtp=tcp --vlog=INFO"
     echo "    eg2: prepare.sh 4 1 11301 12301 32351 22351 -c 1 -l INFO -v false --vtp=tcp --vlog=INFO"
 }
-
+#  $#:表示返回所有脚本参数的个数
 if ( [ $# -eq 1 ] && [ "$1" ==  "-h" ] ) ; then
     show_help
     exit 1
