@@ -188,7 +188,12 @@ function generate_config() {
     VM_GO_LOG_LEVEL="" # default INFO
     VM_GO_TRANSPORT_PROTOCOL="" # default tcp, uds
 
-    set -- $(getopt -u -o c:l:v: -l vtp:,vlog: "$@")   # -o 接收短参数， -l 接收长参数， 需要参数值的在参数后面添加:
+    echo "$@"
+     # -o 接收短参数， -l 接收长参数， 需要参数值的在参数后面添加:
+    set -- $(getopt -u -o c:l:v: -l vtp:,vlog: "$@")
+
+    echo "$1" "$2" "$3"
+    exit 1
     while [ -n "$1" ]; do
         case "$1" in
             -c) CONSENSUS_TYPE=$2
