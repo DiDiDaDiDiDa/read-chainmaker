@@ -504,6 +504,7 @@ function generate_config() {
 
 #进行了参数检查
 check_params
-
+#生成节点，组织，证书材料
 generate_certs
-#generate_config $@
+#生成链相关的配置文件
+generate_config $@
